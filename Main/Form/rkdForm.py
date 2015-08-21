@@ -207,6 +207,9 @@ class UI_rkd(QWidget):
     def clearForm(self):
         return rkdOperate.clearRkd(self)
     
+    def queryForm(self):
+        return rkdOperate.queryRkd(self.tableView)
+    
     def findForm(self):
         self.findRkdDialog = QDialog(self)
         self.findRkdDialog.setWindowTitle(u'查找')
@@ -238,9 +241,11 @@ class UI_rkd(QWidget):
         self.findButton.setText(u'查找')
         self.findDialogLayout.addWidget(self.findButton,row+1,3)
         
-        
+        self.tableView = QTableView(self.findRkdDialog)
+        self.findDialogLayout.addWidget(self.tableView,row+2,1,4,10)
+        self.connect(self.findButton, SIGNAL('clicked()'),self.queryForm)
+        #rkdOperate.queryRkd(self.tableView)
         self.findRkdDialog.setLayout(self.findDialogLayout)
-
         self.findRkdDialog.exec_()
 # app = QApplication(sys.argv)
 # rkd = UI_rkd()

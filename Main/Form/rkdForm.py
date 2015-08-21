@@ -10,6 +10,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys
 from Control import rkdOperate
+from Main.Form.rkdFindForm import rkdFindForm
 class UI_rkd(QWidget):
     def __init__(self,parent = None):
         super(UI_rkd,self).__init__(parent)
@@ -207,46 +208,12 @@ class UI_rkd(QWidget):
     def clearForm(self):
         return rkdOperate.clearRkd(self)
     
-    def queryForm(self):
-        return rkdOperate.queryRkd(self.tableView)
+    
     
     def findForm(self):
-        self.findRkdDialog = QDialog(self)
-        self.findRkdDialog.setWindowTitle(u'查找')
-        self.findDialogLayout = QGridLayout(self.findRkdDialog)
-        self.findDialogLayout.setContentsMargins(20, 5, 20, 5)
-        self.findargv = [(u'docno',u'入库单号'),(u'custom',u'客户'),(u'Item',u'料品规格')]
-        row = 1
-        col = 1
-        for line in self.findargv:
-            if col >= 4:
-                col =1
-                row +=1
-            temp = QLabel(self)
-            temp.setObjectName(u'find'+line[0])
-            temp.setMinimumWidth(70)
-            temp.setMaximumWidth(100)
-            temp.setText(line[1]+u':')
-            temp.setMargin(5)
-            self.findDialogLayout.addWidget(self.findChild(QLabel,u'find'+line[0]),row,col)
-            col +=1
-            temp = QLineEdit(self)
-            temp.setObjectName(u'find'+line[0])
-            temp.setMinimumWidth(100)
-            temp.setMaximumWidth(150)
-            self.findDialogLayout.addWidget(self.findChild(QLineEdit,u'find'+line[0]),row,col)
-            col +=1
+        findForm = rkdFindForm(self)
+        findForm.exec_() 
         
-        self.findButton = QPushButton(self)
-        self.findButton.setText(u'查找')
-        self.findDialogLayout.addWidget(self.findButton,row+1,3)
-        
-        self.tableView = QTableView(self.findRkdDialog)
-        self.findDialogLayout.addWidget(self.tableView,row+2,1,4,10)
-        self.connect(self.findButton, SIGNAL('clicked()'),self.queryForm)
-        #rkdOperate.queryRkd(self.tableView)
-        self.findRkdDialog.setLayout(self.findDialogLayout)
-        self.findRkdDialog.exec_()
 # app = QApplication(sys.argv)
 # rkd = UI_rkd()
 # rkd.show()

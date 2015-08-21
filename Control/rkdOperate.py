@@ -6,20 +6,17 @@ Created on 2015年8月5日
 '''
 import sqlite3
 from PyQt4.QtCore import QDate
-from PyQt4.QtGui import QMessageBox,QDialog,QGridLayout,QLabel,QLineEdit,QAbstractItemView
-from PyQt4.QtSql import *
-#打开SQLITE连接
+from PyQt4.QtGui import QMessageBox,QDialog,QGridLayout,QLabel,QLineEdit
 def connectDB():
     dataConnect = sqlite3.connect('data.db')
     return dataConnect,dataConnect.cursor()
 
-#关闭SQLITE连接
 def closeDB(DBConnect,cur):
     cur.close()
     DBConnect.commit()
     DBConnect.close()
     
-#新增入库单
+
 def insertRkd(rkdForm):
      
     DBconnect,cur = connectDB()
@@ -41,11 +38,7 @@ def insertRkd(rkdForm):
     closeDB(DBconnect,cur)
     retrieveRkd(rkdForm,docno)
     QMessageBox.information(rkdForm,"Information",u'新增成功')
-
-
-
-
-#重新载入入库单
+    
 def retrieveRkd(rkdForm,docno):
     DBconnect,cur = connectDB()
     sql = u'select docno,custom,item,weight,indate,stock from rkd where docno = \'%s\''%(docno)
@@ -59,7 +52,6 @@ def retrieveRkd(rkdForm,docno):
     rkdForm.stockText.setText(str(row[5]))
     closeDB(DBconnect,cur)
 
-#更新入库单
 def updateRkd(rkdForm):
     if rkdForm.rkdDocNoText.text() == u'自动编号':
         return insertRkd(rkdForm)
@@ -75,8 +67,7 @@ def updateRkd(rkdForm):
         closeDB(DBconnect,cur)
         retrieveRkd(rkdForm, docno)
         QMessageBox.information(rkdForm,"Information",u'保存成功')
-
-#删除入库单       
+        
 def deleteRkd(rkdForm):
     DBconnect,cur = connectDB()
     docno = rkdForm.rkdDocNoText.text()
@@ -90,8 +81,6 @@ def deleteRkd(rkdForm):
     clearRkd(rkdForm)
     QMessageBox.information(rkdForm,"Information",mess)
 
-
-#清除或初始化入库单界面
 def clearRkd(rkdForm):
     rkdForm.rkdDocNoText.setText(u'自动编号')
     rkdForm.CustomText.clear()
@@ -100,28 +89,5 @@ def clearRkd(rkdForm):
     rkdForm.inDateEdit.setDate(QDate.currentDate())
     rkdForm.stockText.clear()
     
-def createConnection(): 
-    if QSqlDatabase.contains('qt_sql_default_connection'):
-        db = QSqlDatabase.database("qt_sql_default_connection")
-    else:
-        #选择数据库类型，这里为sqlite3数据库
-        db=QSqlDatabase.addDatabase("QSQLITE") 
-        #创建数据库data.db,如果存在则打开，否则创建该数据库
-        db.setDatabaseName("data.db") 
-    #打开数据库
-    db.open() 
-    
-    return db
 
-def queryRkd(tableView): 
-    createConnection()
-    model = QSqlTableModel()
-    model.setEditStrategy(QSqlTableModel.OnManualSubmit)
-    model.setTable(u'rkd')
-    model.removeColumns(0,1)
-    model.setFilter('custom = ''123''')
-    print model.filter()
-    model.select()
-    tableView.setModel(model)
-    tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
     

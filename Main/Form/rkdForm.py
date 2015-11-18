@@ -10,7 +10,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys
 from Control import rkdOperate
-from Main.Form.rkdFindForm import rkdFindForm
+from rkdFindForm import rkdFindForm
 class UI_rkd(QWidget):
     def __init__(self,parent = None):
         super(UI_rkd,self).__init__(parent)

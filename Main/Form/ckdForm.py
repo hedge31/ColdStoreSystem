@@ -8,7 +8,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sys
 from Control import rkdOperate
-from Main.Form.ckdFindForm import ckdFindForm
+from ckdFindForm import ckdFindForm
 class UI_ckd(QWidget):
     def __init__(self,parent = None):
         super(UI_ckd,self).__init__(parent)

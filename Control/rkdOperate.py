@@ -5,9 +5,10 @@ Created on 2015年8月5日
 @author: hedge31
 '''
 import sqlite3
-from PyQt4.QtCore import QDate
+from PyQt4.QtCore import QDate,QString
 from PyQt4.QtGui import QMessageBox,QDialog,QGridLayout,QLabel,QLineEdit,QAbstractItemView
 from PyQt4.QtSql import *
+import Dialog
 #打开SQLITE连接
 def connectDB():
     dataConnect = sqlite3.connect('data.db')
@@ -51,11 +52,18 @@ def retrieveRkd(rkdForm,docno):
     sql = u'select docno,custom,item,weight,indate,stock from rkd where docno = \'%s\''%(docno)
     cur.execute(sql)
     row = cur.fetchone()
-    rkdForm.rkdDocNoText.setText(str(row[0]))
-    rkdForm.CustomText.setText(str(row[1]))
-    rkdForm.ItemText.setText(str(row[2]))
+    rkdForm.rkdDocNoText.setText(row[0])
+    if isinstance(row[1], int) or isinstance(row[1], float):
+        rkdForm.CustomText.setText(str(row[1]))
+    else:
+        rkdForm.CustomText.setText(row[1])
+    
+    if isinstance(row[2], int) or isinstance(row[2], float):
+        rkdForm.ItemText.setText(str(row[2]))
+    else:
+        rkdForm.ItemText.setText(row[2])
     rkdForm.weightText.setText(str(row[3]))
-    rkdForm.inDateEdit.setDate(QDate().fromString(str(row[4]),'yyyy-MM-DD'))
+    rkdForm.inDateEdit.setDate(QDate().fromString(row[4],'yyyy-MM-DD'))
     rkdForm.stockText.setText(str(row[5]))
     closeDB(DBconnect,cur)
 
@@ -71,7 +79,8 @@ def updateRkd(rkdForm):
         Weight = rkdForm.weightText.text()
         InDate = rkdForm.inDateEdit.date().toString('yyyy-MM-dd')
         sql = u'update rkd set custom = \'%s\',item = \'%s\',weight = %s,indate = \'%s\' where docno =  \'%s\''%(custom,item,Weight,InDate,docno)
-        cur.execute(str(sql))
+
+        cur.execute(sql)
         closeDB(DBconnect,cur)
         retrieveRkd(rkdForm, docno)
         QMessageBox.information(rkdForm,"Information",u'保存成功')
@@ -119,9 +128,27 @@ def queryRkd(tableView):
     model.setEditStrategy(QSqlTableModel.OnManualSubmit)
     model.setTable(u'rkd')
     model.removeColumns(0,1)
-    model.setFilter('custom = ''123''')
-    print model.filter()
+    model.setFilter('')
     model.select()
     tableView.setModel(model)
     tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+def queryRkdfilter(tableView,thisfilter): 
+    createConnection()
+    model = QSqlTableModel()
+    model.setEditStrategy(QSqlTableModel.OnManualSubmit)
+    model.setTable(u'rkd')
+    model.removeColumns(0,1)
+    model.setFilter(thisfilter)
+    model.select()
+    tableView.setModel(model)
+    tableView.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
+def findedRkdForm(dialog,Index):
+    model = dialog.tableView.model()
+    record = model.record(Index.row())
+    docno = record.value(u'docno').toString()
+    retrieveRkd(dialog.parent, docno)
+    dialog.close()
+
     
